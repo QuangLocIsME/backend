@@ -16,7 +16,8 @@ const userSchema = new mongoose.Schema({
     isActive: { type: Boolean, default: true },
     phoneNumber: { type: String }
 }, {
-    timestamps: true
+    timestamps: true,
+    collection: 'Users'
 });
 
 // Middleware để cập nhật trường updatedAt trước khi lưu

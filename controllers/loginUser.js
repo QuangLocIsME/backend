@@ -27,31 +27,47 @@ async function loginUser(req, res) {
         await user.save();
         
         // Tạo JWT token
-        const token = jwt.sign(
-            { userId: user._id, role: user.role },
-            process.env.JWT_SECRET || "default_secret_key",
-            { expiresIn: "24h" }
-        );
-        
-        res.cookie("authToken", token, {
+        const tokenData = {
+            id: user._id,
+            email: user.email,
+        };
+        const token = jwt.sign(tokenData, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+        // Cấu hình cookie để có thể truy cập từ frontend
+        res.cookie("token", token, {
             httpOnly: true,
-            maxAge: 24 * 60 * 60 * 1000, // 24 giờ
-            sameSite: "strict",
+            secure: process.env.NODE_ENV === "production", // Chỉ dùng HTTPS trong production
+            sameSite: "lax", // Thay đổi từ strict sang lax để cho phép redirect
+            maxAge: 3600000,
+            path: "/", // Đảm bảo cookie áp dụng cho toàn bộ trang web
         });
         
-        const userResponse = {
-            _id: user._id,
-            username: user.username,
-            email: user.email,
-            fullname: user.fullname,
-            role: user.role,
-            avatar: user.avatar,
-            balance: user.balance,
-            coins: user.coins,
-            isActive: user.isActive
-        };
+        // Log thông tin cookie
+        console.log("Cookie đã được thiết lập:", {
+            name: "token",
+            value: token.substring(0, 20) + "...", // Chỉ hiển thị một phần của token để bảo mật
+            options: {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "lax",
+                maxAge: 3600000,
+                path: "/"
+            }
+        });
         
-        res.status(200).json({ user: userResponse });
+        return res.status(200).json({ 
+            success: true, 
+            message: "Login successful", 
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                fullname: user.fullname,
+                avatar: user.avatar
+            }
+        });
+
+        
     } catch (error) {
         console.error("Lỗi đăng nhập:", error);
         res.status(500).json({ message: "Đã có lỗi xảy ra khi đăng nhập" });
