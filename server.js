@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import connectDB from './config/connectDB.js';
 import AuthRouter from './router/AuthRouter.js';
 import ServicesRouter from './router/ServicesRouter.js';
+import SecurityRouter from './router/SecurityRouter.js';
 const app = express()
 dotenv.config();
 const port = process.env.PORT || 5000;
@@ -19,7 +20,7 @@ connectDB();
 //API ENDPOINT
 app.use('/api/auth', AuthRouter);
 app.use('/api/services', ServicesRouter);
-
+app.use('/api/security', SecurityRouter);
 
 
 app.listen(port, () => console.log(`Server đang chạy trên cổng ${port}!`));
