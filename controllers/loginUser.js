@@ -1,6 +1,12 @@
 import UserModel from "../models/UserModel.js";
+import RefreshToken from "../models/RefreshTokenModel.js";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+import {
+    generateAccessToken,
+    generateRefreshToken,
+    setAccessTokenCookie,
+    setRefreshTokenCookie
+} from "../utils/tokenUtils.js";
 
 async function loginUser(req, res) {
     try {
@@ -23,41 +29,53 @@ async function loginUser(req, res) {
             return res.status(401).json({ message: "Tên đăng nhập/email hoặc mật khẩu không đúng" });
         }
         
+        // Cập nhật thời gian đăng nhập cuối
         user.lastLogin = Date.now();
         await user.save();
         
-        // Tạo JWT token
-        const tokenData = {
-            id: user._id,
-            email: user.email,
-        };
-        const token = jwt.sign(tokenData, process.env.JWT_SECRET, { expiresIn: "1h" });
-
-        // Cấu hình cookie để có thể truy cập từ frontend
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production", // Chỉ dùng HTTPS trong production
-            sameSite: "lax", // Thay đổi từ strict sang lax để cho phép redirect
-            maxAge: 3600000,
-            path: "/", // Đảm bảo cookie áp dụng cho toàn bộ trang web
+        // Tạo access token (ngắn hạn - 15 phút)
+        const accessToken = generateAccessToken(user._id);
+        
+        // Tạo refresh token (dài hạn - 7 ngày)
+        const refreshToken = generateRefreshToken(user._id);
+        
+        // Lưu refresh token vào database
+        const expiresAt = new Date();
+        expiresAt.setDate(expiresAt.getDate() + 7); // 7 ngày
+        
+        await RefreshToken.create({
+            userId: user._id,
+            token: refreshToken,
+            expiresAt
         });
         
-        // Log thông tin cookie
+        // Thu hồi các refresh token cũ không cần thiết (giữ tối đa 5 token)
+        const userTokens = await RefreshToken.find({ 
+            userId: user._id,
+            isRevoked: false
+        }).sort({ createdAt: -1 });
+        
+        if (userTokens.length > 5) {
+            const tokensToRevoke = userTokens.slice(5);
+            await RefreshToken.updateMany(
+                { _id: { $in: tokensToRevoke.map(t => t._id) } },
+                { isRevoked: true }
+            );
+        }
+
+        // Thiết lập cookie
+        setAccessTokenCookie(res, accessToken);
+        setRefreshTokenCookie(res, refreshToken);
+        
+        // Log thông tin
         console.log("Cookie đã được thiết lập:", {
-            name: "token",
-            value: token.substring(0, 20) + "...", // Chỉ hiển thị một phần của token để bảo mật
-            options: {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "lax",
-                maxAge: 3600000,
-                path: "/"
-            }
+            access: "token (15 phút)",
+            refresh: "refreshToken (7 ngày)"
         });
         
         return res.status(200).json({ 
             success: true, 
-            message: "Login successful", 
+            message: "Đăng nhập thành công", 
             user: {
                 id: user._id,
                 username: user.username,
@@ -66,8 +84,6 @@ async function loginUser(req, res) {
                 avatar: user.avatar
             }
         });
-
-        
     } catch (error) {
         console.error("Lỗi đăng nhập:", error);
         res.status(500).json({ message: "Đã có lỗi xảy ra khi đăng nhập" });

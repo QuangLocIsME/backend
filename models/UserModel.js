@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
     avatar: { type: String, default: 'default-avatar.png' },
     role: { type: String, enum: ['user', 'admin'], default: 'user' },
     sf2key: { type: String, default: null },
+    sfa: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now },
     updatedAt: { type: Date, default: Date.now },
     lastLogin: { type: Date },

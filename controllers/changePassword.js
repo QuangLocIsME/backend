@@ -9,6 +9,11 @@ export const changePassword = async (req, res) => {
     if (!isPasswordValid) {
         return res.status(401).json({ message: "Mật khẩu cũ không đúng" });
     }
+    const isNewPasswordSameOldPassword = await bcrypt.compare(newPassword, user.password);
+    if (isNewPasswordSameOldPassword) {
+        return res.status(401).json({ message: "Mật khẩu mới không được trùng với mật khẩu cũ" });
+    }
+
     user.password = newPassword;
     await user.save();
     res.status(200).json({ message: "Mật khẩu đã được cập nhật" });
