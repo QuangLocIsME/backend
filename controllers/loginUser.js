@@ -1,6 +1,6 @@
 import UserModel from "../models/UserModel.js";
 import RefreshToken from "../models/RefreshTokenModel.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import {
     generateAccessToken,
     generateRefreshToken,

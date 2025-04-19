@@ -1,5 +1,5 @@
 import UserModel from "../models/UserModel.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export const changePassword = async (req, res) => {
     const { oldPassword, newPassword } = req.body;
@@ -14,7 +14,11 @@ export const changePassword = async (req, res) => {
         return res.status(401).json({ message: "Mật khẩu mới không được trùng với mật khẩu cũ" });
     }
 
-    user.password = newPassword;
+    // Hash mật khẩu mới trước khi lưu
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    user.password = hashedPassword;
+    
     await user.save();
     res.status(200).json({ message: "Mật khẩu đã được cập nhật" });
 };

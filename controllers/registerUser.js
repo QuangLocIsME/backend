@@ -1,5 +1,5 @@
 import UserModel from "../models/UserModel.js"
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 async function registerUser(req, res) {
     try{
         console.log("Đang nhận request đăng ký với dữ liệu:", req.body);
