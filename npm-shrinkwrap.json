@@ -1,0 +1,37 @@
+{
+  "name": "luckybox-backend",
+  "version": "1.0.0",
+  "lockfileVersion": 3,
+  "requires": true,
+  "packages": {
+    "": {
+      "name": "luckybox-backend",
+      "version": "1.0.0",
+      "dependencies": {
+        "bcryptjs": "^2.4.3",
+        "cookie-parser": "^1.4.7",
+        "cors": "^2.8.5",
+        "dotenv": "^16.5.0",
+        "express": "^5.1.0",
+        "jsonwebtoken": "^9.0.2",
+        "mongoose": "^8.13.2",
+        "nodemailer": "^6.10.1",
+        "qrcode": "^1.5.4",
+        "speakeasy": "^2.0.0",
+        "time2fa": "^1.4.2",
+        "ws": "^8.18.1"
+      },
+      "devDependencies": {
+        "nodemon": "^3.1.0"
+      },
+      "engines": {
+        "node": "18.x"
+      }
+    },
+    "node_modules/bcryptjs": {
+      "version": "2.4.3",
+      "resolved": "https://registry.npmjs.org/bcryptjs/-/bcryptjs-2.4.3.tgz",
+      "integrity": "sha512-V/Hy/X9Vt7f3BbPJEi8BdVFMByHi+jNXrYkW3huaybV/kQ0KJg0Y6PkEMbn+zeT+i+SiKZ/HMqJGIIt4LZDqNQ=="
+    }
+  }
+} 
