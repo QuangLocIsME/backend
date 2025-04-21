@@ -28,7 +28,7 @@ const __dirname = path.dirname(__filename);
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: 'https://frontend-cuoi-kiz.vercel.app/',
   credentials: true
 }));
 app.use(express.json());
