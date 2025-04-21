@@ -16,7 +16,7 @@ dotenv.config();
 const port = process.env.PORT || 5000;
 
 const allowedOrigins = [
-  'http://localhost:3000',
+  'https://frontend-cuoi-kiz.vercel.app/',
   process.env.FRONTEND_URL, 
   'https://luckbox-production.up.railway.app' 
 ];
