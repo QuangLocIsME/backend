@@ -55,8 +55,20 @@ const refreshToken = async (req, res) => {
         });
       }
 
-      // Tạo access token mới
-      const newAccessToken = generateAccessToken(decoded.id);
+      // Tìm thông tin người dùng để lấy role
+      const User = (await import('../models/UserModel.js')).default;
+      const user = await User.findById(decoded.id);
+      
+      if (!user) {
+        clearAuthCookies(res);
+        return res.status(403).json({ 
+          success: false, 
+          message: 'Không tìm thấy thông tin người dùng' 
+        });
+      }
+
+      // Tạo access token mới với role
+      const newAccessToken = generateAccessToken(decoded.id, user.role);
       
       // Đặt cookie mới
       setAccessTokenCookie(res, newAccessToken);

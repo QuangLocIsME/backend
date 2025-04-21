@@ -71,7 +71,7 @@ export const createBox = async (req, res) => {
         }
         
         const boxData = req.body;
-        const boxType = req.body.boxType || 'STD'; // Lấy loại hộp từ request
+        const boxType = req.body.boxType || 'LOVA'; // Lấy loại hộp từ request
        
         
         const GenerateBoxId = async () => {
@@ -291,6 +291,81 @@ export const toggleBoxStatus = async (req, res) => {
         return res.status(500).json({
             success: false,
             message: 'Đã xảy ra lỗi khi chuyển đổi trạng thái hộp quà',
+            error: error.message
+        });
+    }
+};
+
+/**
+ * Lấy thống kê hộp quà
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ */
+export const getBoxStats = async (req, res) => {
+    try {
+        // Kiểm tra quyền admin
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({
+                success: false,
+                message: 'Bạn không có quyền thực hiện hành động này'
+            });
+        }
+        
+        // Đếm tổng số hộp quà
+        const boxCount = await Box.countDocuments();
+        
+        // Đếm số hộp quà đang hoạt động
+        const activeBoxes = await Box.countDocuments({ isActive: true });
+        
+        // Đếm số hộp quà theo loại
+        const boxTypes = await Box.aggregate([
+            { $group: { _id: "$boxType", count: { $sum: 1 } } }
+        ]);
+        
+        // Đếm số hộp quà tạo trong 7 ngày qua
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        const newBoxes = await Box.countDocuments({ createdAt: { $gte: sevenDaysAgo } });
+        
+        // Thống kê theo giá
+        const priceStats = await Box.aggregate([
+            {
+                $group: {
+                    _id: null,
+                    avgPrice: { $avg: "$price" },
+                    minPrice: { $min: "$price" },
+                    maxPrice: { $max: "$price" }
+                }
+            }
+        ]);
+        
+        return res.status(200).json({
+            success: true,
+            message: 'Lấy thống kê hộp quà thành công',
+            data: {
+                boxCount,
+                activeBoxes,
+                newBoxes,
+                boxTypes: boxTypes.reduce((acc, type) => {
+                    acc[type._id || 'UNKNOWN'] = type.count;
+                    return acc;
+                }, {}),
+                priceStats: priceStats.length > 0 ? {
+                    average: priceStats[0].avgPrice,
+                    min: priceStats[0].minPrice,
+                    max: priceStats[0].maxPrice
+                } : {
+                    average: 0,
+                    min: 0,
+                    max: 0
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Lỗi khi lấy thống kê hộp quà:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Đã xảy ra lỗi khi lấy thống kê hộp quà',
             error: error.message
         });
     }

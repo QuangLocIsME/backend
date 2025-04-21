@@ -400,4 +400,63 @@ export const deleteUser = async (req, res) => {
             error: error.message
         });
     }
+};
+
+/**
+ * Lấy thống kê người dùng (admin)
+ * @param {Request} req - Express request object
+ * @param {Response} res - Express response object
+ */
+export const getUserStats = async (req, res) => {
+    try {
+        // Kiểm tra quyền admin
+        if (req.user.role !== 'admin') {
+            return res.status(403).json({
+                success: false,
+                message: 'Bạn không có quyền thực hiện hành động này'
+            });
+        }
+        
+        // Đếm tổng số người dùng
+        const userCount = await User.countDocuments();
+        
+        // Đếm số người dùng đang hoạt động
+        const activeUsers = await User.countDocuments({ isActive: true });
+        
+        // Đếm số người dùng đăng ký trong 7 ngày qua
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        const newUsers = await User.countDocuments({ createdAt: { $gte: sevenDaysAgo } });
+        
+        // Đếm số người mới đăng nhập trong 30 ngày qua
+        const thirtyDaysAgo = new Date();
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+        const recentActiveUsers = await User.countDocuments({ lastLogin: { $gte: thirtyDaysAgo } });
+        
+        // Thống kê theo role
+        const admins = await User.countDocuments({ role: 'admin' });
+        const regularUsers = await User.countDocuments({ role: 'user' });
+        
+        return res.status(200).json({
+            success: true,
+            message: 'Lấy thống kê người dùng thành công',
+            data: {
+                userCount,
+                activeUsers,
+                newUsers,
+                recentActiveUsers,
+                roles: {
+                    admin: admins,
+                    user: regularUsers
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Lỗi khi lấy thống kê người dùng:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Đã xảy ra lỗi khi lấy thống kê người dùng',
+            error: error.message
+        });
+    }
 }; 

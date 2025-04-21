@@ -29,8 +29,10 @@ const __dirname = path.dirname(__filename);
 
 // Middleware
 app.use(cors({
-  origin: ['https://frontend-cuoi-kiz-8q6k.vercel.app', 'https://frontend-cuoi-58nhkmo0y-quanglocismes-projects.vercel.app'],
-  credentials: true
+  origin: ['https://frontend-cuoi-kiz-8q6k.vercel.app', 'https://frontend-cuoi-58nhkmo0y-quanglocismes-projects.vercel.app', 'http://localhost:3000'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(cookieParser());
 app.use(express.json());
@@ -48,6 +50,8 @@ app.use(fileUpload({
 
 // Serve static files
 app.use(express.static(path.join(process.cwd(), 'public')));
+// Cấu hình để phục vụ file tĩnh từ thư mục frontend/public
+app.use('/images', express.static(path.join(process.cwd(), '..', 'frontend', 'public', 'images')));
 
 // Routes
 app.use('/api/auth', AuthRouter);

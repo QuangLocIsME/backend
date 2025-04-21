@@ -5,7 +5,8 @@ import {
     createBox,
     updateBox,
     deleteBox,
-    toggleBoxStatus
+    toggleBoxStatus,
+    getBoxStats
 } from '../controllers/boxController.js';
 import authenticateToken from '../middleware/authenticateToken.js';
 
@@ -13,6 +14,7 @@ const BoxRouter = express.Router();
 
 // Endpoints công khai - không yêu cầu xác thực
 BoxRouter.get('/', getAllBoxes);
+BoxRouter.get('/stats', authenticateToken, getBoxStats);
 BoxRouter.get('/:id', getBoxById);
 
 // Endpoints yêu cầu xác thực và quyền admin

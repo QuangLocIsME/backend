@@ -11,7 +11,7 @@ function authenticateToken(req, res, next) {
         });
     }
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
         if (err) {
             // Phân loại lỗi cho frontend
             if (err.name === 'TokenExpiredError') {
@@ -29,7 +29,14 @@ function authenticateToken(req, res, next) {
             });
         }
         
-        req.user = user; 
+        console.log('Decoded token:', decoded);
+        
+        // Nếu không có role trong token, lấy thông tin người dùng từ cơ sở dữ liệu
+        if (decoded && decoded.id && !decoded.role) {
+            console.log('Role không có trong token, sẽ được cập nhật trong lần tạo token tiếp theo');
+        }
+        
+        req.user = decoded; 
         next();
     });
 }

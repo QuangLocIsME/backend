@@ -34,8 +34,8 @@ export const uploadBoxImage = async (req, res) => {
         const timestamp = Date.now();
         const fileName = `${timestamp}${fileExt}`;
         
-        // Đảm bảo thư mục tồn tại
-        const imageDir = path.join(process.cwd(), '..', 'frontend', 'public', 'images', 'boxes');
+        // Lưu ảnh vào thư mục backend/public/images/boxes
+        const imageDir = path.join(process.cwd(), 'public', 'images', 'boxes');
         if (!fs.existsSync(imageDir)) {
             fs.mkdirSync(imageDir, { recursive: true });
             console.log('Đã tạo thư mục:', imageDir);
@@ -84,7 +84,7 @@ export const deleteBoxImage = async (req, res) => {
             });
         }
         
-        const filePath = path.join(process.cwd(), '..', 'frontend', 'public', 'images', 'boxes', fileName);
+        const filePath = path.join(process.cwd(), 'public', 'images', 'boxes', fileName);
         console.log('Đường dẫn file cần xóa:', filePath);
         
         // Kiểm tra xem file có tồn tại không

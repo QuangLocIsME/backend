@@ -31,7 +31,7 @@ async function loginUser(req, res) {
         user.lastLogin = Date.now();
         await user.save();
         
-        const accessToken = generateAccessToken(user._id);
+        const accessToken = generateAccessToken(user._id, user.role);
         
         // Tạo refresh token (dài hạn - 7 ngày)
         const refreshToken = generateRefreshToken(user._id);

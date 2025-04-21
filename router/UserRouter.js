@@ -6,7 +6,8 @@ import {
     resetPassword,
     toggleUserStatus, 
     addBalance,
-    deleteUser
+    deleteUser,
+    getUserStats
 } from '../controllers/userController.js';
 import authenticateToken from '../middleware/authenticateToken.js';
 
@@ -17,6 +18,7 @@ router.use(authenticateToken);
 
 // Routes quản lý người dùng (chỉ dành cho admin)
 router.get('/', getAllUsers);
+router.get('/stats', getUserStats);
 router.get('/:id', getUserById);
 router.put('/:id', updateUserByAdmin);
 router.put('/:id/reset-password', resetPassword);
