@@ -20,16 +20,13 @@ export const generateRefreshToken = (userId) => {
 
 // Đặt cookie cho access token
 export const setAccessTokenCookie = (res, token) => {
-  // Thiết lập môi trường luôn là production
-  const isProduction = true;
-
   // Thiết lập cookie với các tùy chọn cần thiết
   const cookieOptions = {
     httpOnly: true,
     maxAge: 15 * 60 * 1000, // 15 phút
     sameSite: 'none',      // Cho phép cookie giữa các domain khác nhau
     secure: true,          // Yêu cầu HTTPS
-    domain: process.env.COOKIE_DOMAIN || undefined // Sử dụng domain từ biến môi trường nếu có
+    // Bỏ domain để sử dụng domain mặc định
   };
 
   res.cookie('token', token, cookieOptions);
@@ -38,9 +35,6 @@ export const setAccessTokenCookie = (res, token) => {
 
 // Đặt cookie cho refresh token
 export const setRefreshTokenCookie = (res, token) => {
-  // Thiết lập môi trường luôn là production
-  const isProduction = true;
-
   // Thiết lập cookie với các tùy chọn cần thiết
   const cookieOptions = {
     httpOnly: true,
@@ -48,7 +42,7 @@ export const setRefreshTokenCookie = (res, token) => {
     path: '/api/auth/refresh', // Chỉ gửi cookie khi request tới endpoint refresh
     sameSite: 'none',      // Cho phép cookie giữa các domain khác nhau
     secure: true,          // Yêu cầu HTTPS
-    domain: process.env.COOKIE_DOMAIN || undefined // Sử dụng domain từ biến môi trường nếu có
+    // Bỏ domain để sử dụng domain mặc định
   };
 
   res.cookie('refreshToken', token, cookieOptions);
@@ -57,15 +51,12 @@ export const setRefreshTokenCookie = (res, token) => {
 
 // Xóa tất cả các cookie xác thực
 export const clearAuthCookies = (res) => {
-  // Thiết lập môi trường luôn là production
-  const isProduction = true;
-
   // Tùy chọn cookie cơ bản
   const cookieOptions = {
     maxAge: 0,
     sameSite: 'none',
     secure: true,
-    domain: process.env.COOKIE_DOMAIN || undefined
+    // Bỏ domain để sử dụng domain mặc định
   };
 
   res.cookie('token', '', cookieOptions);
