@@ -29,7 +29,7 @@ const __dirname = path.dirname(__filename);
 
 // Middleware
 app.use(cors({
-  origin: ['https://frontend-cuoi-kiz.vercel.app', 'http://localhost:3000'],
+  origin: ['https://frontend-cuoi-kiz-8q6k.vercel.app', 'http://localhost:3000'],
   credentials: true
 }));
 app.use(cookieParser());
