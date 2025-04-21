@@ -1,49 +1,46 @@
 import mongoose from 'mongoose';
 
-const boxHistorySchema = new mongoose.Schema({
-    userId: { 
-        type: mongoose.Schema.Types.ObjectId, 
+const BoxHistorySchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true 
+        required: [true, 'ID người dùng là bắt buộc']
     },
-    boxId: { 
-        type: mongoose.Schema.Types.ObjectId, 
+    boxId: {
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Box',
-        required: true 
+        required: [true, 'ID hộp quà là bắt buộc']
     },
-    itemId: { 
-        type: mongoose.Schema.Types.ObjectId, 
+    itemId: {
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Item',
-        required: true 
+        required: [true, 'ID vật phẩm là bắt buộc']
     },
-    openedAt: { 
-        type: Date, 
-        default: Date.now 
+    openedAt: {
+        type: Date,
+        default: Date.now
     },
-    paymentMethod: { 
-        type: String, 
-        enum: ['coins', 'money', 'free'],
-        required: true 
+    paymentMethod: {
+        type: String,
+        enum: {
+            values: ['money', 'coins'],
+            message: '{VALUE} không phải là phương thức thanh toán hợp lệ'
+        },
+        required: [true, 'Phương thức thanh toán là bắt buộc']
     },
-    createdAt: { 
-        type: Date, 
-        default: Date.now 
-    },
-    updatedAt: { 
-        type: Date, 
-        default: Date.now 
+    price: {
+        type: Number,
+        required: [true, 'Giá thanh toán là bắt buộc']
     }
 }, {
-    timestamps: true,
-    collection: 'Box_History'
+    timestamps: true
 });
 
-// Middleware để cập nhật trường updatedAt trước khi lưu
-boxHistorySchema.pre('save', function(next) {
-    this.updatedAt = Date.now();
-    next();
-});
+// Index để tìm kiếm theo userId
+BoxHistorySchema.index({ userId: 1 });
+// Index theo thời gian mở
+BoxHistorySchema.index({ openedAt: -1 });
 
-const BoxHistory = mongoose.model('BoxHistory', boxHistorySchema);
+const BoxHistory = mongoose.model('BoxHistory', BoxHistorySchema);
 
 export default BoxHistory;

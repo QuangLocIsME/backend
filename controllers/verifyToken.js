@@ -37,7 +37,8 @@ const verifyToken = async (req, res) => {
                 username: result.username,
                 email: result.email,
                 fullname: result.fullname,
-                avatar: result.avatar
+                avatar: result.avatar,
+                role: result.role
             }
         });
         

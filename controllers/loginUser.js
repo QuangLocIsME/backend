@@ -12,7 +12,6 @@ async function loginUser(req, res) {
     try {
         const { login, password } = req.body;
         
-        // Tìm user bằng username hoặc email
         const user = await UserModel.findOne({
             $or: [
                 { username: login },
@@ -29,11 +28,9 @@ async function loginUser(req, res) {
             return res.status(401).json({ message: "Tên đăng nhập/email hoặc mật khẩu không đúng" });
         }
         
-        // Cập nhật thời gian đăng nhập cuối
         user.lastLogin = Date.now();
         await user.save();
         
-        // Tạo access token (ngắn hạn - 15 phút)
         const accessToken = generateAccessToken(user._id);
         
         // Tạo refresh token (dài hạn - 7 ngày)
@@ -81,7 +78,8 @@ async function loginUser(req, res) {
                 username: user.username,
                 email: user.email,
                 fullname: user.fullname,
-                avatar: user.avatar
+                avatar: user.avatar,
+                role: user.role
             }
         });
     } catch (error) {

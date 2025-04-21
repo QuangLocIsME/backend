@@ -1,34 +1,63 @@
 import mongoose from "mongoose";
 
-const itemSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    description: { type: String, required: true },
-    image: { type: String, required: true },
-    value: { type: Number, required: true },
-    rarity: { 
-        type: String, 
-        enum: ['common', 'uncommon', 'rare', 'mythical', 'legendary', 'ancient'],
-        default: 'common' 
+const ItemSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: [true, 'Tên vật phẩm là bắt buộc'],
+        trim: true
     },
-    dropRate: { type: Number, default: 1 },
-    boxIds: [{ 
-        type: mongoose.Schema.Types.ObjectId, 
-        ref: 'Box' 
+    description: {
+        type: String,
+        required: [true, 'Mô tả vật phẩm là bắt buộc'],
+        trim: true
+    },
+    image: {
+        type: String,
+        required: [true, 'Hình ảnh vật phẩm là bắt buộc']
+    },
+    value: {
+        type: Number,
+        required: [true, 'Giá trị vật phẩm là bắt buộc'],
+        min: [0, 'Giá trị không được âm']
+    },
+    rarity: {
+        type: String,
+        enum: {
+            values: ['common', 'uncommon', 'rare', 'epic', 'legendary'],
+            message: '{VALUE} không phải là độ hiếm hợp lệ'
+        },
+        required: [true, 'Độ hiếm vật phẩm là bắt buộc']
+    },
+    dropRate: {
+        type: Number,
+        required: [true, 'Tỉ lệ rơi vật phẩm là bắt buộc'],
+        min: [0, 'Tỉ lệ rơi không được âm'],
+        max: [1, 'Tỉ lệ rơi không được vượt quá 1 (100%)']
+    },
+    boxIds: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Box',
+        required: [true, 'ID của hộp quà chứa vật phẩm là bắt buộc']
     }],
-    isActive: { type: Boolean, default: true },
-    createdAt: { type: Date, default: Date.now },
-    updatedAt: { type: Date, default: Date.now }
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now
+    }
 }, {
     timestamps: true,
     collection: 'Items'
 });
 
 // Middleware để cập nhật trường updatedAt trước khi lưu
-itemSchema.pre('save', function(next) {
+ItemSchema.pre('save', function(next) {
     this.updatedAt = Date.now();
     next();
 });
 
-const Item = mongoose.model('Item', itemSchema);
+const Item = mongoose.model('Item', ItemSchema);
 
 export default Item;
