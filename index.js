@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import fileUpload from 'express-fileupload';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import cookieParser from 'cookie-parser';
 
 // Routes
 import authRoutes from './routes/authRoutes.js';
@@ -31,6 +32,7 @@ app.use(cors({
   origin: ['https://frontend-cuoi-kiz.vercel.app', 'http://localhost:3000'],
   credentials: true
 }));
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
