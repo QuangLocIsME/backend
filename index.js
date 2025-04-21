@@ -8,12 +8,12 @@ import { fileURLToPath } from 'url';
 import cookieParser from 'cookie-parser';
 
 // Routes
-import authRoutes from './routes/authRoutes.js';
-import userRoutes from './routes/userRoutes.js';
-import boxRoutes from './routes/boxRoutes.js';
-import itemRoutes from './routes/itemRoutes.js';
-import boxHistoryRoutes from './routes/boxHistoryRoutes.js';
-import uploadRoutes from './router/uploadRoutes.js';
+import AuthRouter from './router/AuthRouter.js';
+import UserRouter from './router/UserRouter.js';
+import BoxRouter from './router/BoxRouter.js';
+import ServicesRouter from './router/ServicesRouter.js';
+import SecurityRouter from './router/SecurityRouter.js';
+import UploadRouter from './router/uploadRoutes.js';
 
 // Middleware
 import { checkJWT } from './middleware/authMiddleware.js';
@@ -50,12 +50,12 @@ app.use(fileUpload({
 app.use(express.static(path.join(process.cwd(), 'public')));
 
 // Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/boxes', boxRoutes);
-app.use('/api/items', itemRoutes);
-app.use('/api/box-history', boxHistoryRoutes);
-app.use('/api/upload', uploadRoutes);
+app.use('/api/auth', AuthRouter);
+app.use('/api/users', UserRouter);
+app.use('/api/boxes', BoxRouter);
+app.use('/api/services', ServicesRouter);
+app.use('/api/security', SecurityRouter);
+app.use('/api/upload', UploadRouter);
 
 // Kết nối đến MongoDB
 mongoose.connect(process.env.MONGODB_URL)

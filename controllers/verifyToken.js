@@ -7,10 +7,20 @@ import getUserDetailsFromToken from '../services/checkUserDetailWithToken.js';
  */
 const verifyToken = async (req, res) => {
     try {
+        // Kiểm tra cookies tồn tại
+        if (!req.cookies) {
+            console.log('Không có cookies trong request');
+            return res.status(401).json({
+                success: false,
+                message: "Không có cookies trong request"
+            });
+        }
+
         // Lấy token từ cookie
         const token = req.cookies.token;
         
         if (!token) {
+            console.log('Không tìm thấy token trong cookies');
             return res.status(401).json({
                 success: false,
                 message: "Không tìm thấy token xác thực"
