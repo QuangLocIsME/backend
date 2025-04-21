@@ -1,7 +1,22 @@
 import jwt from 'jsonwebtoken';
 
 function authenticateToken(req, res, next) {
-    const token = req.cookies.token;
+    // Lấy token từ nhiều nguồn: cookie hoặc header Authorization
+    let token = null;
+    
+    // Kiểm tra token từ cookie
+    if (req.cookies && req.cookies.token) {
+        token = req.cookies.token;
+        console.log('Đã tìm thấy token trong cookie');
+    }
+    
+    // Kiểm tra token từ header Authorization
+    const authHeader = req.headers['authorization'];
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        const headerToken = authHeader.substring(7); // Bỏ "Bearer " ở đầu
+        token = headerToken;
+        console.log('Đã tìm thấy token trong header Authorization');
+    }
     
     if (!token) {
         return res.status(401).json({ 

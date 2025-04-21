@@ -73,6 +73,7 @@ async function loginUser(req, res) {
         return res.status(200).json({ 
             success: true, 
             message: "Đăng nhập thành công", 
+            token: accessToken,
             user: {
                 id: user._id,
                 username: user.username,

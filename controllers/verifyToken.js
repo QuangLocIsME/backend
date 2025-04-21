@@ -1,4 +1,5 @@
 import getUserDetailsFromToken from '../services/checkUserDetailWithToken.js';
+import jwt from 'jsonwebtoken';
 
 /**
  * Controller xác thực token và trả về thông tin người dùng
@@ -7,20 +8,25 @@ import getUserDetailsFromToken from '../services/checkUserDetailWithToken.js';
  */
 const verifyToken = async (req, res) => {
     try {
-        // Kiểm tra cookies tồn tại
-        if (!req.cookies) {
-            console.log('Không có cookies trong request');
-            return res.status(401).json({
-                success: false,
-                message: "Không có cookies trong request"
-            });
+        // Lấy token từ nhiều nguồn: cookie hoặc header Authorization
+        let token = null;
+        
+        // Kiểm tra token từ cookie
+        if (req.cookies && req.cookies.token) {
+            token = req.cookies.token;
+            console.log('Đã tìm thấy token trong cookie');
         }
-
-        // Lấy token từ cookie
-        const token = req.cookies.token;
+        
+        // Kiểm tra token từ header Authorization
+        const authHeader = req.headers['authorization'];
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+            const headerToken = authHeader.substring(7); // Bỏ "Bearer " ở đầu
+            token = headerToken;
+            console.log('Đã tìm thấy token trong header Authorization');
+        }
         
         if (!token) {
-            console.log('Không tìm thấy token trong cookies');
+            console.log('Không tìm thấy token trong cookies hoặc header');
             return res.status(401).json({
                 success: false,
                 message: "Không tìm thấy token xác thực"
