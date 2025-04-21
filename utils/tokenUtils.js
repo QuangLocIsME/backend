@@ -57,23 +57,22 @@ export const setRefreshTokenCookie = (res, token) => {
 
 // Xóa tất cả các cookie xác thực
 export const clearAuthCookies = (res) => {
-  // Kiểm tra môi trường
-  const isProduction = process.env.NODE_ENV === 'production';
+  // Thiết lập môi trường luôn là production
+  const isProduction = true;
 
   // Tùy chọn cookie cơ bản
   const cookieOptions = {
-    maxAge: 0
+    maxAge: 0,
+    sameSite: 'none',
+    secure: true,
+    domain: process.env.COOKIE_DOMAIN || undefined
   };
-
-  // Thêm các tùy chọn cho môi trường production
-  if (isProduction) {
-    cookieOptions.sameSite = 'none';
-    cookieOptions.secure = true;
-  }
 
   res.cookie('token', '', cookieOptions);
   res.cookie('refreshToken', '', { 
     ...cookieOptions,
     path: '/api/auth/refresh'
   });
+  
+  console.log('Cookies xác thực đã được xóa');
 }; 

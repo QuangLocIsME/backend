@@ -12,6 +12,8 @@ async function loginUser(req, res) {
     try {
         const { login, password } = req.body;
         
+        console.log('Đang xử lý đăng nhập cho:', login);
+        
         const user = await UserModel.findOne({
             $or: [
                 { username: login },
@@ -20,11 +22,13 @@ async function loginUser(req, res) {
         });
         
         if (!user) {
+            console.log('Không tìm thấy người dùng với login:', login);
             return res.status(401).json({ message: "Tên đăng nhập/email hoặc mật khẩu không đúng" });
         }
         
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
+            console.log('Mật khẩu không hợp lệ cho người dùng:', login);
             return res.status(401).json({ message: "Tên đăng nhập/email hoặc mật khẩu không đúng" });
         }
         
@@ -61,19 +65,17 @@ async function loginUser(req, res) {
         }
 
         // Thiết lập cookie
+        console.log('Thiết lập cookie với tokens');
         setAccessTokenCookie(res, accessToken);
         setRefreshTokenCookie(res, refreshToken);
         
-        // Log thông tin
-        console.log("Cookie đã được thiết lập:", {
-            access: "token (15 phút)",
-            refresh: "refreshToken (7 ngày)"
-        });
+        // Debug thông tin headers
+        console.log('Response headers:', res.getHeaders());
         
         return res.status(200).json({ 
             success: true, 
             message: "Đăng nhập thành công", 
-            token: accessToken,
+            token: accessToken, // Trả về token trong response để frontend lưu
             user: {
                 id: user._id,
                 username: user.username,
