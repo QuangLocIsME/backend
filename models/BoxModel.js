@@ -40,6 +40,13 @@ const BoxSchema = new mongoose.Schema({
         required: [true, 'Giá coin là bắt buộc'],
         min: [0, 'Giá coin không được âm']
     },
+    discount: {
+        type: Number,
+        default: 0,
+        min: [0, 'Giảm giá không được âm'],
+        max: [100, 'Giảm giá không được vượt quá 100%'],
+        description: 'Phần trăm giảm giá (0-100%)'
+    },
     image: {
         type: String,
         required: [true, 'Tên file hình ảnh là bắt buộc'],
