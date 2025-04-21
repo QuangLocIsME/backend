@@ -123,31 +123,22 @@ export const updateBoxTypeChance = async (req, res) => {
 };
 
 /**
- * Xóa tỷ lệ rơi vật phẩm
+ * Seed dữ liệu mặc định cho BoxTypeChance
  */
-export const deleteBoxTypeChance = async (req, res) => {
-    try {
-        const boxType = req.params.boxType.toUpperCase();
-        const deletedChance = await BoxTypeChance.findOneAndDelete({ boxType });
+export const seedDefaultBoxTypeChances = async () => {
+    const defaultChances = [
+        { boxType: 'LOVA', chances: { common: 70, uncommon: 20, rare: 8, epic: 2, legendary: 0 } },
+        { boxType: 'MEDI', chances: { common: 40, uncommon: 30, rare: 20, epic: 8, legendary: 2 } },
+        { boxType: 'HIGV', chances: { common: 10, uncommon: 20, rare: 30, epic: 25, legendary: 15 } },
+        { boxType: 'EVNT', chances: { event: 100 } },
+        { boxType: 'RAND', chances: { common: 35, uncommon: 25, rare: 20, epic: 15, legendary: 5 } }
+    ];
 
-        if (!deletedChance) {
-            return res.status(404).json({
-                success: false,
-                message: `Không tìm thấy loại hộp: ${boxType}`
-            });
+    for (const chance of defaultChances) {
+        const exists = await BoxTypeChance.findOne({ boxType: chance.boxType });
+        if (!exists) {
+            await BoxTypeChance.create(chance);
         }
-
-        return res.status(200).json({
-            success: true,
-            message: `Xóa tỷ lệ rơi vật phẩm thành công cho loại hộp: ${boxType}`,
-            data: deletedChance
-        });
-    } catch (error) {
-        console.error('Lỗi khi xóa tỷ lệ rơi vật phẩm:', error);
-        return res.status(500).json({
-            success: false,
-            message: 'Đã xảy ra lỗi khi xóa tỷ lệ rơi vật phẩm',
-            error: error.message
-        });
     }
+    console.log('Seed dữ liệu mặc định thành công');
 };

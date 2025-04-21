@@ -2,10 +2,9 @@ import express from 'express';
 import {
     getAllBoxTypeChances,
     getBoxTypeChanceByType,
-    createBoxTypeChance,
-    updateBoxTypeChance,
-    deleteBoxTypeChance
+    updateBoxTypeChance
 } from '../controllers/boxTypeChancesController.js';
+import authenticateToken from '../middleware/authenticateToken.js';
 
 const router = express.Router();
 
@@ -15,13 +14,10 @@ router.get('/', getAllBoxTypeChances);
 // Lấy tỷ lệ rơi vật phẩm của một loại hộp
 router.get('/:boxType', getBoxTypeChanceByType);
 
-// Tạo tỷ lệ rơi vật phẩm mới
-router.post('/', createBoxTypeChance);
+// Cập nhật tỷ lệ rơi vật phẩm cần quyền admin
+router.put('/:boxType',authenticateToken, updateBoxTypeChance);
 
-// Cập nhật tỷ lệ rơi vật phẩm
-router.put('/:boxType', updateBoxTypeChance);
-
-// Xóa tỷ lệ rơi vật phẩm
-router.delete('/:boxType', deleteBoxTypeChance);
+// Xóa route DELETE (nếu có)
+// router.delete('/:boxType', deleteBoxTypeChance);
 
 export default router;

@@ -6,6 +6,7 @@ import fileUpload from 'express-fileupload';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import cookieParser from 'cookie-parser';
+import { seedDefaultBoxTypeChances } from './controllers/boxTypeChancesController.js';
 
 // Routes
 import AuthRouter from './router/AuthRouter.js';
@@ -69,6 +70,10 @@ app.use('/api/box-type-chances', BoxTypeChancesRouter);
 mongoose.connect(process.env.MONGODB_URL)
   .then(() => {
     console.log('Kết nối MongoDB thành công');
+    
+    // Seed dữ liệu mặc định
+    seedDefaultBoxTypeChances();
+
     app.listen(PORT, () => {
       console.log(`Server đang chạy trên cổng ${PORT}`);
     });

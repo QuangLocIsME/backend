@@ -9,12 +9,8 @@ const boxTypeChanceSchema = new mongoose.Schema({
         epic: { type: Number, default: 0 },
         legendary: { type: Number, default: 0 },
         event: { type: Number, default: 0 } // Optional for event-based boxes
-    }
-}, {
-    timestamps: true,
-    collection: 'BoxTypeChance',
-    toJSON: { getters: true },
-    toObject: { getters: true }
-});
+    },
+    isDefault: { type: Boolean, default: false } // Đánh dấu mục mặc định
+}, { timestamps: true });
 
 export const BoxTypeChance = mongoose.model('BoxTypeChance', boxTypeChanceSchema);
