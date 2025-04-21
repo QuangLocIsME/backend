@@ -32,7 +32,9 @@ app.use(cors({
   origin: ['https://frontend-cuoi-kiz.vercel.app', 'https://frontend-cuoi-kiz-8q6k.vercel.app', 'https://frontend-cuoi-58nhkmo0y-quanglocismes-projects.vercel.app', 'http://localhost:3000'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Requested-With'],
+  exposedHeaders: ['set-cookie'],
+  maxAge: 86400 // 24 giờ
 }));
 app.use(cookieParser());
 app.use(express.json());

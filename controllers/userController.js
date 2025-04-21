@@ -409,6 +409,11 @@ export const deleteUser = async (req, res) => {
  */
 export const getUserStats = async (req, res) => {
     try {
+        // Debug thông tin token
+        console.log('User từ token:', req.user);
+        console.log('Auth Header:', req.headers['authorization']);
+        console.log('Cookies:', req.cookies);
+        
         // Kiểm tra quyền admin
         if (req.user.role !== 'admin') {
             return res.status(403).json({

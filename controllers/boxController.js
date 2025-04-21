@@ -303,6 +303,11 @@ export const toggleBoxStatus = async (req, res) => {
  */
 export const getBoxStats = async (req, res) => {
     try {
+        // Debug thông tin token
+        console.log('Box Stats - User từ token:', req.user);
+        console.log('Box Stats - Auth Header:', req.headers['authorization']);
+        console.log('Box Stats - Cookies:', req.cookies);
+        
         // Kiểm tra quyền admin
         if (req.user.role !== 'admin') {
             return res.status(403).json({
