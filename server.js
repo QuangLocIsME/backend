@@ -9,6 +9,8 @@ import ServicesRouter from './router/ServicesRouter.js';
 import SecurityRouter from './router/SecurityRouter.js';
 import BoxRouter from './router/BoxRouter.js';
 import UploadRouter from './router/uploadRoutes.js';
+import UserRouter from './router/UserRouter.js';
+
 const app = express()
 dotenv.config();
 const port = process.env.PORT || 5000;
@@ -51,6 +53,7 @@ app.use('/api/services', ServicesRouter);
 app.use('/api/security', SecurityRouter);
 app.use('/api/boxes', BoxRouter);
 app.use('/api/upload', UploadRouter);
+app.use('/api/users', UserRouter);
 
 app.get('/', (req, res) => {
   res.send('API đang hoạt động!');
