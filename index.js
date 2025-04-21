@@ -28,7 +28,7 @@ const __dirname = path.dirname(__filename);
 
 // Middleware
 app.use(cors({
-  origin: 'https://frontend-cuoi-kiz.vercel.app/',
+  origin: ['https://frontend-cuoi-kiz.vercel.app', 'http://localhost:3000'],
   credentials: true
 }));
 app.use(express.json());
@@ -56,7 +56,7 @@ app.use('/api/box-history', boxHistoryRoutes);
 app.use('/api/upload', uploadRoutes);
 
 // Kết nối đến MongoDB
-mongoose.connect(process.env.MONGODB_URI)
+mongoose.connect(process.env.MONGODB_URL)
   .then(() => {
     console.log('Kết nối MongoDB thành công');
     app.listen(PORT, () => {
