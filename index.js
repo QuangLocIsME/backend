@@ -29,7 +29,7 @@ const __dirname = path.dirname(__filename);
 
 // Middleware
 app.use(cors({
-  origin: ['https://frontend-cuoi-kiz-8q6k.vercel.app', 'https://frontend-cuoi-58nhkmo0y-quanglocismes-projects.vercel.app', 'http://localhost:3000'],
+  origin: ['https://frontend-cuoi-kiz.vercel.app', 'https://frontend-cuoi-kiz-8q6k.vercel.app', 'https://frontend-cuoi-58nhkmo0y-quanglocismes-projects.vercel.app', 'http://localhost:3000'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
