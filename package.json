@@ -2,7 +2,8 @@
   "type": "module",
   "scripts": {
     "start": "cross-env NODE_ENV=production node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "build": "echo \"Build completed successfully\""
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
