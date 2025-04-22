@@ -6,6 +6,7 @@ const rewardSchema = new mongoose.Schema({
     rarity: { type: String, enum: ['common', 'uncommon', 'rare', 'epic', 'legendary', 'event'], required: true },
     type: { type: String, enum: ['discount', 'product', 'special', 'event'], required: true },
     value: { type: Number, default: 0 },
+    assetbyuser: { type: String,default:NaN }, // id của user
     description: { type: String },
     code: { type: String },
 }, { timestamps: true });
