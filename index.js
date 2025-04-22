@@ -17,6 +17,8 @@ import SecurityRouter from './router/SecurityRouter.js';
 import UploadRouter from './router/uploadRoutes.js';
 import BoxTypeChancesRouter from './router/BoxTypeChancesRouter.js';
 import RewardRoute from './router/RewardRoute.js';
+import BuyRouter from './router/BuyRouter.js';
+import StorageRouter from './router/StorageRouter.js';
 
 // Middleware
 import { checkJWT } from './middleware/authMiddleware.js';
@@ -67,6 +69,8 @@ app.use('/api/security', SecurityRouter);
 app.use('/api/upload', UploadRouter);
 app.use('/api/box-type-chances', BoxTypeChancesRouter);
 app.use('/api/rewards', RewardRoute);
+app.use('/api/buy', BuyRouter);
+app.use('/api/storage', StorageRouter);
 
 // Kết nối đến MongoDB
 mongoose.connect(process.env.MONGODB_URL)
