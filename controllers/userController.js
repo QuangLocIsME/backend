@@ -157,51 +157,37 @@ export const resetPassword = async (req, res) => {
             return res.status(403).json({
                 success: false,
                 message: 'Bạn không có quyền thực hiện hành động này'
-            });
-        }
-        
+            });}
         const userId = req.params.id;
         const { newPassword } = req.body;
-        
         // Kiểm tra dữ liệu đầu vào
         if (!newPassword) {
             return res.status(400).json({
                 success: false,
                 message: 'Vui lòng cung cấp mật khẩu mới'
-            });
-        }
-        
+            });}
         // Kiểm tra độ dài mật khẩu mới
         if (newPassword.length < 6) {
             return res.status(400).json({
                 success: false,
                 message: 'Mật khẩu mới phải có ít nhất 6 ký tự'
-            });
-        }
-        
+            });}
         // Tìm người dùng
         const user = await User.findById(userId);
-        
         if (!user) {
             return res.status(404).json({
                 success: false,
                 message: 'Không tìm thấy người dùng'
-            });
-        }
-        
+            });}
         // Mã hóa mật khẩu mới
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(newPassword, salt);
-        
         // Cập nhật mật khẩu mới
         await User.findByIdAndUpdate(
             userId,
-            { 
-                password: hashedPassword,
-                updatedAt: Date.now()
-            }
+            {password: hashedPassword,
+                updatedAt: Date.now()}
         );
-        
         return res.status(200).json({
             success: true,
             message: 'Đặt lại mật khẩu thành công'
@@ -230,7 +216,6 @@ export const toggleUserStatus = async (req, res) => {
                 message: 'Bạn không có quyền thực hiện hành động này'
             });
         }
-        
         const userId = req.params.id;
         const user = await User.findById(userId);
         
@@ -240,7 +225,6 @@ export const toggleUserStatus = async (req, res) => {
                 message: 'Không tìm thấy người dùng'
             });
         }
-        
         // Không cho phép vô hiệu hóa tài khoản admin
         if (user.role === 'admin') {
             return res.status(403).json({
@@ -248,7 +232,6 @@ export const toggleUserStatus = async (req, res) => {
                 message: 'Không thể vô hiệu hóa tài khoản admin'
             });
         }
-        
         // Chuyển đổi trạng thái
         user.isActive = !user.isActive;
         user.updatedAt = Date.now();
@@ -284,46 +267,33 @@ export const addBalance = async (req, res) => {
             return res.status(403).json({
                 success: false,
                 message: 'Bạn không có quyền thực hiện hành động này'
-            });
-        }
-        
+            });}
         const userId = req.params.id;
         const { amount, type } = req.body;
-        
         // Kiểm tra dữ liệu đầu vào
         if (!amount || isNaN(amount) || amount <= 0) {
             return res.status(400).json({
                 success: false,
                 message: 'Số tiền/xu phải là số dương'
-            });
-        }
-        
+            });}
         if (!type || !['money', 'coins'].includes(type)) {
             return res.status(400).json({
                 success: false,
                 message: 'Loại nạp phải là tiền (money) hoặc xu (coins)'
-            });
-        }
-        
+            });}
         const user = await User.findById(userId);
-        
         if (!user) {
             return res.status(404).json({
                 success: false,
                 message: 'Không tìm thấy người dùng'
-            });
-        }
-        
+            });}
         // Cập nhật số dư
         if (type === 'money') {
             user.balance += Number(amount);
         } else {
-            user.coins += Number(amount);
-        }
-        
+            user.coins += Number(amount);}
         user.updatedAt = Date.now();
         await user.save();
-        
         return res.status(200).json({
             success: true,
             message: `Đã nạp ${type === 'money' ? amount.toLocaleString() + ' VNĐ' : amount + ' xu'} vào tài khoản thành công`,
@@ -381,13 +351,9 @@ export const deleteUser = async (req, res) => {
             const avatarDir = path.join(process.cwd(), '..', 'frontend', 'public', 'images', 'avatars');
             const avatarPath = path.join(avatarDir, user.avatar);
             if (fs.existsSync(avatarPath)) {
-                fs.unlinkSync(avatarPath);
-            }
-        }
-        
+                fs.unlinkSync(avatarPath);}}
         // Xóa người dùng
         await User.findByIdAndDelete(userId);
-        
         return res.status(200).json({
             success: true,
             message: 'Xóa người dùng thành công'

@@ -94,34 +94,26 @@ BoxSchema.pre('save', async function(next) {
     try {
         // Cập nhật trường updatedAt
         this.updatedAt = Date.now();
-        
         // Nếu boxId đã tồn tại, không cần tạo mới
         if (this.boxId) return next();
-        
         // Lấy prefix từ boxType
         const prefix = 'BOX-' + this.boxType;
-        
         // Tìm Box có cùng boxType với số thứ tự lớn nhất
         const lastBox = await mongoose.model('Box').findOne(
             { boxId: new RegExp('^' + prefix) },
             { boxId: 1 },
             { sort: { boxId: -1 } }
         );
-        
         let counter = 0;
-        
         // Nếu đã có Box cùng loại, lấy số thứ tự và tăng lên 1
         if (lastBox && lastBox.boxId) {
             const lastCounter = parseInt(lastBox.boxId.substring(lastBox.boxId.lastIndexOf('-') + 1), 10);
             counter = lastCounter + 1;
         }
-        
         // Đảm bảo counter có 5 chữ số bằng cách thêm số 0 ở đầu
         const paddedCounter = String(counter).padStart(5, '0');
-        
         // Tạo boxId mới
         this.boxId = `${prefix}-${paddedCounter}`;
-        
         return next();
     } catch (error) {
         return next(error);

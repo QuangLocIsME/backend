@@ -47,7 +47,6 @@ export const createReward = async (req, res) => {
             .toLowerCase();
         const rarity = (rewardData.rarity || 'common').toLowerCase();
         const type = (rewardData.type || 'product').toLowerCase();
-
         // Hàm sinh id tự động, đảm bảo không trùng
         const generateRewardId = async () => {
             let unique = false;
@@ -56,34 +55,24 @@ export const createReward = async (req, res) => {
                 const random = Math.floor(1000 + Math.random() * 9000); // 4 số ngẫu nhiên
                 newId = `${base}-${rarity}-${type}-${random}`;
                 const exists = await Reward.findOne({ id: newId });
-                if (!exists) unique = true;
-            }
-            return newId;
-        };
-
+                if (!exists) unique = true; }
+            return newId;};
         // Luôn sinh id tự động, bỏ qua id client gửi lên
         rewardData.id = await generateRewardId();
-
         const reward = new Reward(rewardData);
         await reward.save();
-
         res.status(201).json({
             success: true,
             message: 'Tạo phần thưởng mới thành công',
-            data: reward
-        });
+            data: reward});
     } catch (error) {
         console.error('Lỗi khi tạo phần thưởng mới:', error);
-
         if (error.name === 'ValidationError') {
             const validationErrors = Object.values(error.errors).map(err => err.message);
             return res.status(400).json({
                 success: false,
                 message: 'Lỗi khi xác thực dữ liệu',
-                error: validationErrors
-            });
-        }
-
+                error: validationErrors });}
         if (error.code === 11000) {
             return res.status(400).json({
                 success: false,
@@ -91,7 +80,6 @@ export const createReward = async (req, res) => {
                 error: 'Duplicate key error'
             });
         }
-
         res.status(500).json({
             success: false,
             message: 'Đã xảy ra lỗi khi tạo phần thưởng mới',

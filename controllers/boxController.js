@@ -67,51 +67,35 @@ export const createBox = async (req, res) => {
             return res.status(403).json({
                 success: false,
                 message: 'Bạn không có quyền thực hiện hành động này'
-            });
-        }
-        
+            }); }
         const boxData = req.body;
         const boxType = req.body.boxType || 'LOVA'; // Lấy loại hộp từ request
-       
-        
         const GenerateBoxId = async () => {
             const prefix = 'BOX-' + boxType;
-            
             const lastBox = await Box.findOne(
                 { boxId: new RegExp('^' + prefix) },
                 { boxId: 1 },
                 { sort: { boxId: -1 } }
             );
-            
             let counter = 0;
-            
             if (lastBox && lastBox.boxId) {
                 const lastCounter = parseInt(lastBox.boxId.substring(lastBox.boxId.lastIndexOf('-') + 1), 10);
                 counter = lastCounter + 1;
             }
-            
             const paddedCounter = String(counter).padStart(5, '0');
-            
             // Tạo boxId mới
-            return `${prefix}-${paddedCounter}`;
-        };
-        
+            return `${prefix}-${paddedCounter}`; };
         // Nếu không có sẵn boxId, tạo mới
         if (!boxData.boxId) {
-            boxData.boxId = await GenerateBoxId();
-        }
-        
+            boxData.boxId = await GenerateBoxId();}
         const newBox = new Box(boxData);
         await newBox.save();
-        
         return res.status(201).json({
             success: true,
             message: 'Tạo hộp quà mới thành công',
-            data: newBox
-        });
+            data: newBox});
     } catch (error) {
         console.error('Lỗi khi tạo hộp quà mới:', error);
-        
         // Xử lý lỗi validation
         if (error.name === 'ValidationError') {
             const validationErrors = Object.values(error.errors).map(err => err.message);
@@ -119,18 +103,14 @@ export const createBox = async (req, res) => {
                 success: false,
                 message: 'Lỗi khi xác thực dữ liệu',
                 error: validationErrors
-            });
-        }
-        
+            });}
         // Xử lý lỗi trùng lặp
         if (error.code === 11000) {
             return res.status(400).json({
                 success: false,
                 message: 'Tên hộp quà đã tồn tại',
                 error: 'Duplicate key error'
-            });
-        }
-        
+            });}
         return res.status(500).json({
             success: false,
             message: 'Đã xảy ra lỗi khi tạo hộp quà mới',
@@ -151,40 +131,30 @@ export const updateBox = async (req, res) => {
             return res.status(403).json({
                 success: false,
                 message: 'Bạn không có quyền thực hiện hành động này'
-            });
-        }
-       
+            });}
         const boxId = req.params.id;
         const updateData = req.body;
-        
         // Không cho phép thay đổi boxId và boxType sau khi đã tạo
         delete updateData.boxId;
         delete updateData.boxType;
-        
         // Cập nhật thời gian chỉnh sửa
         updateData.updatedAt = Date.now();
-        
         const updatedBox = await Box.findOneAndUpdate(
             { boxId: boxId },
             updateData,
             { new: true, runValidators: true }
         );
-        
         if (!updatedBox) {
             return res.status(404).json({
                 success: false,
                 message: 'Không tìm thấy hộp quà'
-            });
-        }
-        
+            });}
         return res.status(200).json({
             success: true,
             message: 'Cập nhật hộp quà thành công',
-            data: updatedBox
-        });
+            data: updatedBox});
     } catch (error) {
         console.error('Lỗi khi cập nhật hộp quà:', error);
-        
         // Xử lý lỗi validation
         if (error.name === 'ValidationError') {
             const validationErrors = Object.values(error.errors).map(err => err.message);
@@ -192,9 +162,7 @@ export const updateBox = async (req, res) => {
                 success: false,
                 message: 'Lỗi khi xác thực dữ liệu',
                 error: validationErrors
-            });
-        }
-        
+            });}
         // Xử lý lỗi trùng lặp
         if (error.code === 11000) {
             return res.status(400).json({
@@ -203,7 +171,6 @@ export const updateBox = async (req, res) => {
                 error: 'Duplicate key error'
             });
         }
-        
         return res.status(500).json({
             success: false,
             message: 'Đã xảy ra lỗi khi cập nhật hộp quà',
@@ -307,43 +274,30 @@ export const getBoxStats = async (req, res) => {
         console.log('Box Stats - User từ token:', req.user);
         console.log('Box Stats - Auth Header:', req.headers['authorization']);
         console.log('Box Stats - Cookies:', req.cookies);
-        
         // Kiểm tra quyền admin
         if (req.user.role !== 'admin') {
             return res.status(403).json({
                 success: false,
-                message: 'Bạn không có quyền thực hiện hành động này'
-            });
-        }
-        
+                message: 'Bạn không có quyền thực hiện hành động này' });}
         // Đếm tổng số hộp quà
         const boxCount = await Box.countDocuments();
-        
         // Đếm số hộp quà đang hoạt động
         const activeBoxes = await Box.countDocuments({ isActive: true });
-        
         // Đếm số hộp quà theo loại
         const boxTypes = await Box.aggregate([
-            { $group: { _id: "$boxType", count: { $sum: 1 } } }
-        ]);
-        
+            { $group: { _id: "$boxType", count: { $sum: 1 } } }]);
         // Đếm số hộp quà tạo trong 7 ngày qua
         const sevenDaysAgo = new Date();
         sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
         const newBoxes = await Box.countDocuments({ createdAt: { $gte: sevenDaysAgo } });
-        
         // Thống kê theo giá
         const priceStats = await Box.aggregate([
-            {
-                $group: {
+            {$group: {
                     _id: null,
                     avgPrice: { $avg: "$price" },
                     minPrice: { $min: "$price" },
                     maxPrice: { $max: "$price" }
-                }
-            }
-        ]);
-        
+                }}]);
         return res.status(200).json({
             success: true,
             message: 'Lấy thống kê hộp quà thành công',
@@ -358,13 +312,10 @@ export const getBoxStats = async (req, res) => {
                 priceStats: priceStats.length > 0 ? {
                     average: priceStats[0].avgPrice,
                     min: priceStats[0].minPrice,
-                    max: priceStats[0].maxPrice
-                } : {
+                    max: priceStats[0].maxPrice} : {
                     average: 0,
                     min: 0,
-                    max: 0
-                }
-            }
+                    max: 0}}
         });
     } catch (error) {
         console.error('Lỗi khi lấy thống kê hộp quà:', error);
